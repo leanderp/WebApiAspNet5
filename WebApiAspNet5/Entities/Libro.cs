@@ -2,16 +2,18 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace WebApiAspNet5.Entities
 {
-    public class Autor
+    public class Libro
     {
         public int Id { get; set; }
         [Required]
-        [StringLength(50)]
-        public string Nombre { get; set; }
-        public List<Libro> Libros { get; set; }
+        public string Titulo { get; set; }
+        [Required]
+        public int AutorId { get; set; }
+        public Autor Autor { get; set; }
     }
 }

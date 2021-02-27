@@ -24,14 +24,14 @@ namespace WebApiAspNet5.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Autor>> Get()
         {
-            return _context.Autores.ToList();
+            return _context.Autores.Include(x => x.Libros).ToList();
         }
 
         // GET: api/Autores/1
         [HttpGet("{id}", Name ="ObtenerAutor")]
         public ActionResult<Autor> Get(int id)
         {
-            var autor = _context.Autores.Find(id);
+            var autor = _context.Autores.Include(x => x.Libros).FirstOrDefault(x => x.Id == id);
             if(autor == null)
             {
                 return NotFound();
