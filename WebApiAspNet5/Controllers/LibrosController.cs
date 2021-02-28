@@ -23,16 +23,16 @@ namespace WebApiAspNet5.Controllers
 
         // GET: api/Libros
         [HttpGet]
-        public ActionResult<IEnumerable<Libro>> Get()
+        public async Task<ActionResult<IEnumerable<Libro>>> GetAsync()
         {
-            return _context.Libros.Include(x => x.Autor).ToList();
+            return await _context.Libros.Include(x => x.Autor).ToListAsync();
         }
 
         // GET: api/Libros/1
         [HttpGet("{id}", Name = "ObtenerLibro")]
-        public ActionResult<Libro> Get(int id)
+        public async Task<ActionResult<Libro>> GetAsync(int id)
         {
-            var libro = _context.Libros.Include(x => x.Autor).FirstOrDefault(x => x.Id == id);
+            var libro = await _context.Libros.Include(x => x.Autor).FirstOrDefaultAsync(x => x.Id == id);
 
             if (libro == null)
             {
@@ -44,10 +44,10 @@ namespace WebApiAspNet5.Controllers
 
         // POST: api/Libros
         [HttpPost]
-        public ActionResult Post([FromBody] Libro libro)
+        public async Task<ActionResult> PostAsync([FromBody] Libro libro)
         {
-            _context.Libros.Add(libro);
-            _context.SaveChanges();
+            await _context.Libros.AddAsync(libro);
+            await _context.SaveChangesAsync();
             
             return new CreatedAtRouteResult("ObtenerLibro", new { id = libro.Id }, libro);
         }
@@ -77,9 +77,9 @@ namespace WebApiAspNet5.Controllers
 
         // DELETE: api/Libros/1
         [HttpDelete("{id}")]
-        public ActionResult<Libro> Delete(int id)
+        public async Task<ActionResult<Libro>> DeleteAsync(int id)
         {
-            var libro = _context.Libros.Find(id);
+            var libro = await _context.Libros.FindAsync(id);
 
             if (libro == null)
             {
@@ -87,7 +87,7 @@ namespace WebApiAspNet5.Controllers
             }
 
             _context.Libros.Remove(libro);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return libro;
         }

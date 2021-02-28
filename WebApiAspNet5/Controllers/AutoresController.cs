@@ -22,16 +22,16 @@ namespace WebApiAspNet5.Controllers
 
         // GET: api/Autores
         [HttpGet]
-        public ActionResult<IEnumerable<Autor>> Get()
+        public async Task<ActionResult<IEnumerable<Autor>>> GetAsync()
         {
-            return _context.Autores.Include(x => x.Libros).ToList();
+            return await _context.Autores.Include(x => x.Libros).ToListAsync();
         }
 
         // GET: api/Autores/1
         [HttpGet("{id}", Name ="ObtenerAutor")]
-        public ActionResult<Autor> Get(int id)
+        public async Task<ActionResult<Autor>> GetAsync(int id)
         {
-            var autor = _context.Autores.Include(x => x.Libros).FirstOrDefault(x => x.Id == id);
+            var autor = await _context.Autores.Include(x => x.Libros).FirstOrDefaultAsync(x => x.Id == id);
             if(autor == null)
             {
                 return NotFound();
@@ -42,17 +42,17 @@ namespace WebApiAspNet5.Controllers
 
         // POST: api/Autores
         [HttpPost]
-        public ActionResult Post([FromBody]Autor autor)
+        public async Task<IActionResult> PostAsync([FromBody]Autor autor)
         {
-            _context.Autores.Add(autor);
-            _context.SaveChanges();
+            await _context.Autores.AddAsync(autor);
+            await _context.SaveChangesAsync();
             
             return new CreatedAtRouteResult("ObtenerAutor", new { id = autor.Id}, autor);
         }
 
         // PUT: api/Autores/1
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] Autor value)
+        public IActionResult Put(int id, [FromBody] Autor value)
         {
             if (id != value.Id)
             {
@@ -75,9 +75,9 @@ namespace WebApiAspNet5.Controllers
 
         // DELETE: api/Autores/1
         [HttpDelete("{id}")]
-        public ActionResult<Autor> Delete(int id)
+        public async Task<ActionResult<Autor>> DeleteAsync(int id)
         {
-            var autor = _context.Autores.Find(id);
+            var autor = await _context.Autores.FindAsync(id);
 
             if (autor == null)
             {
@@ -85,7 +85,7 @@ namespace WebApiAspNet5.Controllers
             }
 
             _context.Autores.Remove(autor);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return autor;
         }
 
