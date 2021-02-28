@@ -10,7 +10,7 @@ namespace WebApiAspNet5.Entities
     {
         public int Id { get; set; }
         [Required]
-        [StringLength(50)]
+        [StringLength(50, ErrorMessage ="El Nombre del autor debe tener {1} carateres o menos")]
         public string Nombre { get; set; }
         public List<Libro> Libros { get; set; }
     }
