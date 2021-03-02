@@ -35,8 +35,6 @@ namespace WebApiAspNet5
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnectionString")));
 
-            
-
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApiAspNet5", Version = "v1" });

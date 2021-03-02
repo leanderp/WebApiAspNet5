@@ -70,7 +70,7 @@ namespace WebApiAspNet5.Controllers
                 return NotFound();
             }
 
-            return Ok();
+            return new CreatedAtRouteResult("ObtenerAutor", new { id = value.Id }, value);
         }
 
         // DELETE: api/Autores/1

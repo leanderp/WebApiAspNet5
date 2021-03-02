@@ -72,7 +72,7 @@ namespace WebApiAspNet5.Controllers
                 return NotFound();
             }
 
-            return Ok();
+            return new CreatedAtRouteResult("ObtenerLibro", new { id = value.Id }, value);
         }
 
         // DELETE: api/Libros/1
