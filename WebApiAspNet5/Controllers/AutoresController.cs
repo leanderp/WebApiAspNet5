@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebApiAspNet5.Context;
 using WebApiAspNet5.Entities;
+using WebApiAspNet5.Models;
 
 namespace WebApiAspNet5.Controllers
 {
@@ -14,22 +16,26 @@ namespace WebApiAspNet5.Controllers
     public class AutoresController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-        public AutoresController(ApplicationDbContext context)
+        public AutoresController(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/Autores
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Autor>>> GetAsync()
+        public async Task<ActionResult<IEnumerable<AutorDTO>>> GetAsync()
         {
-            return await _context.Autores.Include(x => x.Libros).ToListAsync();
+            var autores = await _context.Autores.Include(x => x.Libros).ToListAsync();
+            var autoresDTO = _mapper.Map<List<AutorDTO>>(autores);
+            return autoresDTO;
         }
 
         // GET: api/Autores/1
         [HttpGet("{id}", Name ="ObtenerAutor")]
-        public async Task<ActionResult<Autor>> GetAsync(int id)
+        public async Task<ActionResult<AutorDTO>> GetAsync(int id)
         {
             var autor = await _context.Autores.Include(x => x.Libros).FirstOrDefaultAsync(x => x.Id == id);
             if(autor == null)
@@ -37,7 +43,9 @@ namespace WebApiAspNet5.Controllers
                 return NotFound();
             }
 
-            return autor;
+            var autorDTO = _mapper.Map<AutorDTO>(autor);
+
+            return autorDTO;
         }
 
         // POST: api/Autores

@@ -5,17 +5,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebApiAspNet5.Helpers;
 
-namespace WebApiAspNet5.Entities
+namespace WebApiAspNet5.Models
 {
-    public class Autor
+    public class AutorDTO
     {
         public int Id { get; set; }
         [Required]
-        [StringLength(50, ErrorMessage ="El Nombre del autor debe tener {1} carateres o menos")]
+        [StringLength(50, ErrorMessage = "El Nombre del autor debe tener {1} carateres o menos")]
         [PrimeraLetraMayuscula]
         public string Nombre { get; set; }
-        public string Identificacion { get; set; }
         public DateTime FechaNacimiento { get; set; }
-        public List<Libro> Libros { get; set; }
+        public List<LibroDTO> Libros { get; set; }
     }
 }

@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -13,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApiAspNet5.Context;
+using WebApiAspNet5.Models;
 
 namespace WebApiAspNet5
 {
@@ -36,6 +38,8 @@ namespace WebApiAspNet5
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnectionString")));
+
+            services.AddAutoMapper(c => c.AddProfile<AutoMapping>(), typeof(Startup));
 
             services.AddSwaggerGen(c =>
             {
