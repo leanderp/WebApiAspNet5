@@ -11,7 +11,6 @@ namespace WebApiAspNet5.Models
     {
         public int Id { get; set; }
         [Required]
-        [PrimeraLetraMayuscula]
         public string Titulo { get; set; }
         [Required]
         public int AutorId { get; set; }

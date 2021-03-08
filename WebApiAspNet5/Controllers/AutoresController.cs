@@ -50,12 +50,13 @@ namespace WebApiAspNet5.Controllers
 
         // POST: api/Autores
         [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody]Autor autor)
+        public async Task<IActionResult> PostAsync([FromBody]AutorCreacionDTO autorCreacion)
         {
+            var autor = _mapper.Map<Autor>(autorCreacion);
             await _context.Autores.AddAsync(autor);
             await _context.SaveChangesAsync();
-            
-            return new CreatedAtRouteResult("ObtenerAutor", new { id = autor.Id}, autor);
+            var autorDTO = _mapper.Map<AutorDTO>(autor);
+            return new CreatedAtRouteResult("ObtenerAutor", new { id = autor.Id}, autorDTO);
         }
 
         // PUT: api/Autores/1

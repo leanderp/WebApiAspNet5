@@ -3,16 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using WebApiAspNet5.Helpers;
 
 namespace WebApiAspNet5.Models
 {
-    public class AutorDTO
+    public class AutorCreacionDTO
     {
-        public int Id { get; set; }
         [Required]
         public string Nombre { get; set; }
         public DateTime FechaNacimiento { get; set; }
-        public List<LibroDTO> Libros { get; set; }
     }
 }
