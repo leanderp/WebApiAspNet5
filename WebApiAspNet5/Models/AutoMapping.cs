@@ -14,6 +14,7 @@ namespace WebApiAspNet5.Models
             CreateMap<Autor, AutorDTO>();
             CreateMap<Libro, LibroDTO>();
             CreateMap<AutorCreacionDTO, Autor>();
+            CreateMap<Autor, AutorCreacionDTO>();
         }
     }
 }

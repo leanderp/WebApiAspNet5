@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -61,25 +62,56 @@ namespace WebApiAspNet5.Controllers
 
         // PUT: api/Autores/1
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] Autor value)
+        public async Task<IActionResult> PutAsync(int id, [FromBody] AutorCreacionDTO autorActualizacion)
         {
-            if (id != value.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(value).State = EntityState.Modified;
+            var autor = _mapper.Map<Autor>(autorActualizacion);
+            autor.Id = id;
+            _context.Entry(autor).State = EntityState.Modified;
 
             try
             {
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException) when (!AutorExiste(id))
             {
                 return NotFound();
             }
 
-            return new CreatedAtRouteResult("ObtenerAutor", new { id = value.Id }, value);
+            return NoContent();
+        }
+
+        // PATCH: api/Autores/1
+        // [{"op":"replace","path":"/fechaNacimiento","value": "0001-01-01"}]
+        [HttpPatch("{id}")]
+        public async Task<ActionResult> Patch(int id, [FromBody] JsonPatchDocument<AutorCreacionDTO> patchDocument)
+        {
+            if (patchDocument==null)
+            {
+                return BadRequest();
+            }
+
+            var autorDeLaDB = await _context.Autores.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (autorDeLaDB==null)
+            {
+                return NotFound();
+            }
+
+            var autorDTO = _mapper.Map<AutorCreacionDTO>(autorDeLaDB);
+
+            patchDocument.ApplyTo(autorDTO, ModelState);
+
+            var isValid = TryValidateModel(autorDeLaDB);
+
+            if (!isValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _mapper.Map(autorDTO, autorDeLaDB);
+
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
 
         // DELETE: api/Autores/1
