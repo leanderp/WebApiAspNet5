@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -6,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebApiAspNet5.Context;
 using WebApiAspNet5.Entities;
+using WebApiAspNet5.Models;
 
 namespace WebApiAspNet5.Controllers
 {
@@ -14,10 +17,12 @@ namespace WebApiAspNet5.Controllers
     public class LibrosController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-        public LibrosController(ApplicationDbContext context)
+        public LibrosController(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
 
@@ -72,8 +77,43 @@ namespace WebApiAspNet5.Controllers
                 return NotFound();
             }
 
-            return new CreatedAtRouteResult("ObtenerLibro", new { id = value.Id }, value);
+            return NoContent();
         }
+
+        // PATCH: api/Autores/1
+        // [{"op":"replace","path":"/Titulo","value": ""}]
+        [HttpPatch("{id}")]
+        public async Task<ActionResult> Patch(int id, [FromBody] JsonPatchDocument<LibroDTO> patchDocument)
+        {
+            if (patchDocument == null)
+            {
+                return BadRequest();
+            }
+
+            var LibroDeLaDB = await _context.Libros.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (LibroDeLaDB == null)
+            {
+                return NotFound();
+            }
+
+            var LibroDTO = _mapper.Map<LibroDTO>(LibroDeLaDB);
+
+            patchDocument.ApplyTo(LibroDTO, ModelState);
+
+            var isValid = TryValidateModel(LibroDeLaDB);
+
+            if (!isValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _mapper.Map(LibroDTO, LibroDeLaDB);
+
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
 
         // DELETE: api/Libros/1
         [HttpDelete("{id}")]

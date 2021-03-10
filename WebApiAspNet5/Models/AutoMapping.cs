@@ -12,9 +12,11 @@ namespace WebApiAspNet5.Models
         public AutoMapping()
         {
             CreateMap<Autor, AutorDTO>();
-            CreateMap<Libro, LibroDTO>();
             CreateMap<AutorCreacionDTO, Autor>();
             CreateMap<Autor, AutorCreacionDTO>();
+            
+            CreateMap<Libro, LibroDTO>();
+            CreateMap<LibroDTO, Libro>();
         }
     }
 }

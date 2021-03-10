@@ -127,7 +127,7 @@ namespace WebApiAspNet5.Controllers
 
             _context.Autores.Remove(autor);
             await _context.SaveChangesAsync();
-            return autor;
+            return NoContent();
         }
 
         private bool AutorExiste(long id) =>
