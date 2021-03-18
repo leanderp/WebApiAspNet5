@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,6 +43,12 @@ namespace WebApiAspNet5
 
             services.AddAutoMapper(c => c.AddProfile<AutoMapping>(), typeof(Startup));
 
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>()
+                .AddScoped<IUrlHelper>(x => x
+                .GetRequiredService<IUrlHelperFactory>()
+                .GetUrlHelper(x.GetRequiredService<IActionContextAccessor>()
+                .ActionContext));
+            
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApiAspNet5", Version = "v1" });

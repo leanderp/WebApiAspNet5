@@ -7,7 +7,7 @@ using WebApiAspNet5.Helpers;
 
 namespace WebApiAspNet5.Models
 {
-    public class LibroDTO
+    public class LibroDTO: Recurso
     {
         public int Id { get; set; }
         [Required]

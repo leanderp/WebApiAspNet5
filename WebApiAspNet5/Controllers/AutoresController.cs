@@ -18,20 +18,32 @@ namespace WebApiAspNet5.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IUrlHelper _urlHelper;
 
-        public AutoresController(ApplicationDbContext context, IMapper mapper)
+        public AutoresController(ApplicationDbContext context, IMapper mapper, IUrlHelper urlHelper)
         {
             _context = context;
             _mapper = mapper;
+            _urlHelper = urlHelper;
         }
 
         // GET: api/Autores
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<AutorDTO>>> GetAsync()
+        [HttpGet(Name ="ObtenerAutores")]
+        public async Task<IActionResult> GetAsync(bool incluirEnlacesHATEOAS = false)
         {
             var autores = await _context.Autores.Include(x => x.Libros).ToListAsync();
             var autoresDTO = _mapper.Map<List<AutorDTO>>(autores);
-            return autoresDTO;
+            var resultado = new ColeccionDeRecursos<AutorDTO>(autoresDTO);
+
+            if (incluirEnlacesHATEOAS)
+            {
+                autoresDTO.ForEach(a => GenerarEnlaces(a));
+                resultado.Enlaces.Add(new Enlace(href: _urlHelper.Link("ObtenerAutores", new { }), rel: "self", metodo: "GET"));
+                resultado.Enlaces.Add(new Enlace(href: _urlHelper.Link("CrearAutor", new { }), rel: "CrearAutor", metodo: "POST"));
+                return Ok(resultado);
+            }
+
+            return Ok(autoresDTO);
         }
 
         // GET: api/Autores/1
@@ -46,11 +58,13 @@ namespace WebApiAspNet5.Controllers
 
             var autorDTO = _mapper.Map<AutorDTO>(autor);
 
+            GenerarEnlaces(autorDTO);
+
             return autorDTO;
         }
 
         // POST: api/Autores
-        [HttpPost]
+        [HttpPost(Name ="CrearAutor")]
         public async Task<IActionResult> PostAsync([FromBody]AutorCreacionDTO autorCreacion)
         {
             var autor = _mapper.Map<Autor>(autorCreacion);
@@ -61,7 +75,7 @@ namespace WebApiAspNet5.Controllers
         }
 
         // PUT: api/Autores/1
-        [HttpPut("{id}")]
+        [HttpPut("{id}",Name ="ActualizarAutor")]
         public async Task<IActionResult> PutAsync(int id, [FromBody] AutorCreacionDTO autorActualizacion)
         {
             var autor = _mapper.Map<Autor>(autorActualizacion);
@@ -82,7 +96,7 @@ namespace WebApiAspNet5.Controllers
 
         // PATCH: api/Autores/1
         // [{"op":"replace","path":"/fechaNacimiento","value": "0001-01-01"}]
-        [HttpPatch("{id}")]
+        [HttpPatch("{id}", Name ="ModificarAutor")]
         public async Task<ActionResult> Patch(int id, [FromBody] JsonPatchDocument<AutorCreacionDTO> patchDocument)
         {
             if (patchDocument==null)
@@ -115,7 +129,7 @@ namespace WebApiAspNet5.Controllers
         }
 
         // DELETE: api/Autores/1
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}", Name ="BorrarAutor")]
         public async Task<ActionResult<Autor>> DeleteAsync(int id)
         {
             var autor = await _context.Autores.FindAsync(id);
@@ -132,6 +146,14 @@ namespace WebApiAspNet5.Controllers
 
         private bool AutorExiste(long id) =>
             _context.Autores.Any(a => a.Id == id);
+
+        private void GenerarEnlaces(AutorDTO autor)
+        {
+            autor.Enlaces.Add(new Enlace(href: _urlHelper.Link("ObtenerAutor", new { id=autor.Id }), rel: "self", metodo: "GET"));
+            autor.Enlaces.Add(new Enlace(href: _urlHelper.Link("ActualizarAutor", new { id = autor.Id }), rel: "actualizar-autor", metodo: "PUT"));
+            autor.Enlaces.Add(new Enlace(href: _urlHelper.Link("ModificarAutor", new { id = autor.Id }), rel: "modificar-autor", metodo: "PATCH"));
+            autor.Enlaces.Add(new Enlace(href: _urlHelper.Link("BorrarAutor", new { id = autor.Id }), rel: "borrar-autor", metodo: "DELETE"));
+        }
 
     }
 }

@@ -18,16 +18,18 @@ namespace WebApiAspNet5.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IUrlHelper _urlHelper;
 
-        public LibrosController(ApplicationDbContext context, IMapper mapper)
+        public LibrosController(ApplicationDbContext context, IMapper mapper, IUrlHelper urlHelper)
         {
             _context = context;
             _mapper = mapper;
+            _urlHelper = urlHelper;
         }
 
 
         // GET: api/Libros
-        [HttpGet]
+        [HttpGet(Name ="ObtenerLibros")]
         public async Task<ActionResult<IEnumerable<Libro>>> GetAsync()
         {
             return await _context.Libros.Include(x => x.Autor).ToListAsync();
@@ -35,7 +37,7 @@ namespace WebApiAspNet5.Controllers
 
         // GET: api/Libros/1
         [HttpGet("{id}", Name = "ObtenerLibro")]
-        public async Task<ActionResult<Libro>> GetAsync(int id)
+        public async Task<ActionResult<LibroDTO>> GetAsync(int id)
         {
             var libro = await _context.Libros.Include(x => x.Autor).FirstOrDefaultAsync(x => x.Id == id);
 
@@ -43,12 +45,16 @@ namespace WebApiAspNet5.Controllers
             {
                 return NotFound();
             }
-
-            return libro;
+            
+            var LibroDTO = _mapper.Map<LibroDTO>(libro);
+            
+            GenerarEnlaces(LibroDTO);
+            
+            return LibroDTO;
         }
 
         // POST: api/Libros
-        [HttpPost]
+        [HttpPost(Name ="CrearLibro")]
         public async Task<ActionResult> PostAsync([FromBody] Libro libro)
         {
             await _context.Libros.AddAsync(libro);
@@ -58,7 +64,7 @@ namespace WebApiAspNet5.Controllers
         }
 
         // PUT: api/Libros/1
-        [HttpPut("{id}")]
+        [HttpPut("{id}",Name ="ActualiarLibro")]
         public ActionResult Put(int id , [FromBody] Libro value)
         {
             if (id != value.Id)
@@ -82,7 +88,7 @@ namespace WebApiAspNet5.Controllers
 
         // PATCH: api/Autores/1
         // [{"op":"replace","path":"/Titulo","value": ""}]
-        [HttpPatch("{id}")]
+        [HttpPatch("{id}", Name ="ModificarLibro")]
         public async Task<ActionResult> Patch(int id, [FromBody] JsonPatchDocument<LibroDTO> patchDocument)
         {
             if (patchDocument == null)
@@ -116,7 +122,7 @@ namespace WebApiAspNet5.Controllers
 
 
         // DELETE: api/Libros/1
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}", Name ="BorrarLibro")]
         public async Task<ActionResult<Libro>> DeleteAsync(int id)
         {
             var libro = await _context.Libros.FindAsync(id);
@@ -135,5 +141,13 @@ namespace WebApiAspNet5.Controllers
 
         private bool LibroExiste(long id) =>
             _context.Libros.Any(a => a.Id == id);
+
+        private void GenerarEnlaces(LibroDTO libro)
+        {
+            libro.Enlaces.Add(new Enlace(href: _urlHelper.Link("ObtenerLibro", new { id = libro.Id }), rel: "self", metodo: "GET"));
+            libro.Enlaces.Add(new Enlace(href: _urlHelper.Link("ActualiarLibro", new { id = libro.Id }), rel: "actualizar-libro", metodo: "PUT"));
+            libro.Enlaces.Add(new Enlace(href: _urlHelper.Link("ModificarLibro", new { id = libro.Id }), rel: "modificar-libro", metodo: "PATCH"));
+            libro.Enlaces.Add(new Enlace(href: _urlHelper.Link("BorrarLibro", new { id = libro.Id }), rel: "borrar-libro", metodo: "DELETE"));
+        }
     }
 }
