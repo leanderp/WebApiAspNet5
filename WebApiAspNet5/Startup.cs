@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApiAspNet5.Context;
+using WebApiAspNet5.Helpers;
 using WebApiAspNet5.Models;
 
 namespace WebApiAspNet5
@@ -48,7 +49,11 @@ namespace WebApiAspNet5
                 .GetRequiredService<IUrlHelperFactory>()
                 .GetUrlHelper(x.GetRequiredService<IActionContextAccessor>()
                 .ActionContext));
-            
+
+            services.AddScoped<HATEOASAuthorFilterAttribute>();
+            services.AddScoped<HATEOASAuthorsFilterAttribute>();
+            services.AddScoped<GeneradorEnlaces>();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApiAspNet5", Version = "v1" });
