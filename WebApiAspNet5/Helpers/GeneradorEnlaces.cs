@@ -40,6 +40,7 @@ namespace WebApiAspNet5.Helpers
             var _urlHelper = ConstruirURLHelper();
             autor.Enlaces.Add(new Enlace(_urlHelper.Link("ObtenerAutor", new { id = autor.Id }), rel: "self", metodo: "GET"));
             autor.Enlaces.Add(new Enlace(_urlHelper.Link("ActualizarAutor", new { id = autor.Id }), rel: "actualizar-autor", metodo: "PUT"));
+            autor.Enlaces.Add(new Enlace(_urlHelper.Link("ModificarAutor", new { id = autor.Id }), rel: "modificar-autor", metodo: "PATCH"));
             autor.Enlaces.Add(new Enlace(_urlHelper.Link("BorrarAutor", new { id = autor.Id }), rel: "borrar-autor", metodo: "DELETE"));
         }
     }

@@ -29,8 +29,9 @@ namespace WebApiAspNet5.Controllers
         /// <summary>
         /// Obtener lista de todos los autores con sus libros
         /// </summary>
+        /// <param>Agregar en el Header de la peticion [Key:IncluirHATEOA,Value:Y] para optener endpoints de cada autor </param>
         /// <returns></returns>
-        // GET: api/Autores
+        // GET:api/Autores
         [HttpGet(Name ="ObtenerAutores")]
         [ServiceFilter(typeof(HATEOASAuthorsFilterAttribute))]
         public async Task<ActionResult<IEnumerable<AutorDTO>>> GetAsync()
@@ -44,6 +45,7 @@ namespace WebApiAspNet5.Controllers
         /// Obtiene un autor en especifico
         /// </summary>
         /// <param name="id">Id del autor a obtener</param>
+        /// <param>Agregar en el Header de la peticion [Key:IncluirHATEOA,Value:Y] para optener endpoints del autor </param>
         /// <returns></returns>
         // GET: api/Autores/1
         [HttpGet("{id}", Name ="ObtenerAutor")]
