@@ -13,7 +13,7 @@ using WebApiAspNet5.Models;
 namespace WebApiAspNet5.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     public class LibrosController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -29,12 +29,21 @@ namespace WebApiAspNet5.Controllers
 
 
         // GET: api/Libros
+        /// <summary>
+        /// Obtener lista de todos los libros con su autor
+        /// </summary>
+        /// <returns></returns>
         [HttpGet(Name ="ObtenerLibros")]
         public async Task<ActionResult<IEnumerable<Libro>>> GetAsync()
         {
             return await _context.Libros.Include(x => x.Autor).ToListAsync();
         }
 
+        /// <summary>
+        /// Obtiene un libro en especifico
+        /// </summary>
+        /// <param name="id">Id del libro a obtener</param>
+        /// <returns></returns>
         // GET: api/Libros/1
         [HttpGet("{id}", Name = "ObtenerLibro")]
         public async Task<ActionResult<LibroDTO>> GetAsync(int id)
@@ -53,6 +62,11 @@ namespace WebApiAspNet5.Controllers
             return LibroDTO;
         }
 
+        /// <summary>
+        /// Crea un libro
+        /// </summary>
+        /// <param name="libro">Modelo del libro a enviar</param>
+        /// <returns></returns>
         // POST: api/Libros
         [HttpPost(Name ="CrearLibro")]
         public async Task<ActionResult> PostAsync([FromBody] Libro libro)
@@ -63,6 +77,12 @@ namespace WebApiAspNet5.Controllers
             return new CreatedAtRouteResult("ObtenerLibro", new { id = libro.Id }, libro);
         }
 
+        /// <summary>
+        /// Actualiza un libro en especifico
+        /// </summary>
+        /// <param name="id">Id del libro a actualizar</param>
+        /// <param name="value">Modelo del libro a actualizar</param>
+        /// <returns></returns>
         // PUT: api/Libros/1
         [HttpPut("{id}",Name ="ActualiarLibro")]
         public ActionResult Put(int id , [FromBody] Libro value)
@@ -86,6 +106,12 @@ namespace WebApiAspNet5.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Modifica un libro en especifico
+        /// </summary>
+        /// <param name="id">>Id del libro a modificar</param>
+        /// <param name="patchDocument">Modelo de libro ejemplo: [{"op":"replace","path":"/Titulo","value": ""}]</param>
+        /// <returns></returns>
         // PATCH: api/Autores/1
         // [{"op":"replace","path":"/Titulo","value": ""}]
         [HttpPatch("{id}", Name ="ModificarLibro")]
@@ -120,7 +146,11 @@ namespace WebApiAspNet5.Controllers
             return NoContent();
         }
 
-
+        /// <summary>
+        /// Borra un libro en especifico
+        /// </summary>
+        /// <param name="id">Id del libro a borrar</param>
+        /// <returns></returns>
         // DELETE: api/Libros/1
         [HttpDelete("{id}", Name ="BorrarLibro")]
         public async Task<ActionResult<Libro>> DeleteAsync(int id)

@@ -17,7 +17,11 @@ namespace WebApiAspNet5.Controllers
         {
             _urlHelper = urlHelper;
         }
-
+        
+        /// <summary>
+        /// Lista con los endpoints que podemos solicitar (HATEOAS)
+        /// </summary>
+        /// <returns></returns>
         [HttpGet(Name ="GetRoot")]
         public ActionResult<IEnumerable<Enlace>> Get()
         {

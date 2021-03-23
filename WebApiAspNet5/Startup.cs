@@ -13,7 +13,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using WebApiAspNet5.Context;
 using WebApiAspNet5.Helpers;
@@ -56,7 +58,22 @@ namespace WebApiAspNet5
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApiAspNet5", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { 
+                    Title = "Web Api en Asp .Net 5", 
+                    Version = "v1" ,
+                    Description = "Web api de Autores de libros en ASP.NET Core 5 sin Autentificacion.",
+                    TermsOfService = new Uri("https://github.com/leanderp/"),
+                    Contact = new OpenApiContact()
+                    {
+                        Name = "Leander Perez",
+                        Email = "leanderperez15@gmail.com",
+                        Url = new Uri("https://github.com/leanderp/")
+                    }
+                });
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
             });
         }
 

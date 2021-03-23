@@ -14,7 +14,7 @@ using WebApiAspNet5.Models;
 namespace WebApiAspNet5.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     public class AutoresController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -26,6 +26,10 @@ namespace WebApiAspNet5.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Obtener lista de todos los autores con sus libros
+        /// </summary>
+        /// <returns></returns>
         // GET: api/Autores
         [HttpGet(Name ="ObtenerAutores")]
         [ServiceFilter(typeof(HATEOASAuthorsFilterAttribute))]
@@ -36,6 +40,11 @@ namespace WebApiAspNet5.Controllers
             return autoresDTO;
         }
 
+        /// <summary>
+        /// Obtiene un autor en especifico
+        /// </summary>
+        /// <param name="id">Id del autor a obtener</param>
+        /// <returns></returns>
         // GET: api/Autores/1
         [HttpGet("{id}", Name ="ObtenerAutor")]
         [ServiceFilter(typeof(HATEOASAuthorFilterAttribute))]
@@ -51,7 +60,11 @@ namespace WebApiAspNet5.Controllers
 
             return autorDTO;
         }
-
+        /// <summary>
+        /// Crea un autor
+        /// </summary>
+        /// <param name="autorCreacion">Modelo del Autor</param>
+        /// <returns></returns>
         // POST: api/Autores
         [HttpPost(Name ="CrearAutor")]
         public async Task<IActionResult> PostAsync([FromBody]AutorCreacionDTO autorCreacion)
@@ -63,6 +76,12 @@ namespace WebApiAspNet5.Controllers
             return new CreatedAtRouteResult("ObtenerAutor", new { id = autor.Id}, autorDTO);
         }
 
+        /// <summary>
+        /// Actualiza un autor en especifico
+        /// </summary>
+        /// <param name="id">>Id del autor a actualizar</param>
+        /// <param name="autorActualizacion">Modelo del Autor a enviar</param>
+        /// <returns></returns>
         // PUT: api/Autores/1
         [HttpPut("{id}",Name ="ActualizarAutor")]
         public async Task<IActionResult> PutAsync(int id, [FromBody] AutorCreacionDTO autorActualizacion)
@@ -83,6 +102,12 @@ namespace WebApiAspNet5.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Modifica un autor en especifico
+        /// </summary>
+        /// <param name="id">Id del autor a modificar</param>
+        /// <param name="patchDocument">Modelo de Autor ejemplo: [{"op":"replace","path":"/fechaNacimiento","value": "0001-01-01"}]</param>
+        /// <returns></returns>
         // PATCH: api/Autores/1
         // [{"op":"replace","path":"/fechaNacimiento","value": "0001-01-01"}]
         [HttpPatch("{id}", Name ="ModificarAutor")]
@@ -117,6 +142,11 @@ namespace WebApiAspNet5.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Borra un autor en especifico
+        /// </summary>
+        /// <param name="id">Id del autor a borrar</param>
+        /// <returns></returns>
         // DELETE: api/Autores/1
         [HttpDelete("{id}", Name ="BorrarAutor")]
         public async Task<ActionResult<Autor>> DeleteAsync(int id)
