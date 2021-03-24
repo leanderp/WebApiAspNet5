@@ -27,16 +27,33 @@ namespace WebApiAspNet5.Controllers
         }
 
         /// <summary>
-        /// Obtener lista de todos los autores con sus libros
+        ///  Obtener lista de todos los autores con sus libros
         /// </summary>
         /// <param>Agregar en el Header de la peticion [Key:IncluirHATEOA,Value:Y] para optener endpoints de cada autor </param>
+        /// <param name="numeroDePagina">Numero de pagina a mostrar</param>
+        /// <param name="cantidadDeRegistro">Cantidad de registros a mostrasr por pagina (Min 5 - Max 100)</param>
         /// <returns></returns>
         // GET:api/Autores
         [HttpGet(Name ="ObtenerAutores")]
         [ServiceFilter(typeof(HATEOASAuthorsFilterAttribute))]
-        public async Task<ActionResult<IEnumerable<AutorDTO>>> GetAsync()
+        public async Task<ActionResult<IEnumerable<AutorDTO>>> GetAsync(int numeroDePagina = 1, int cantidadDeRegistro = 5)
         {
-            var autores = await _context.Autores.Include(x => x.Libros).ToListAsync();
+            numeroDePagina = (numeroDePagina < 1) ? 1 : numeroDePagina;
+            cantidadDeRegistro = (cantidadDeRegistro < 5) ? 5 : cantidadDeRegistro;
+            cantidadDeRegistro = (cantidadDeRegistro > 100) ? 100 : cantidadDeRegistro;
+
+            var query = _context.Autores.AsQueryable();
+
+            var totalDeRegistro = query.Count();
+
+            var autores = await query
+                .Skip(cantidadDeRegistro*(numeroDePagina-1))
+                .Take(cantidadDeRegistro)
+                .Include(x => x.Libros).ToListAsync();
+
+            Response.Headers["X-Total-Registro"] = totalDeRegistro.ToString();
+            Response.Headers["X-Cantidad-Paginas"] = ((int)Math.Ceiling((double)totalDeRegistro / cantidadDeRegistro)).ToString();
+
             var autoresDTO = _mapper.Map<List<AutorDTO>>(autores);
             return autoresDTO;
         }
